@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -151,7 +151,7 @@ class BaseInput<T: EventTarget> extends React.Component<
     const baseButtonOverrides = {
       BaseButton: {
         style: ({$theme}) => ({
-          color: $theme.colors.foreground,
+          color: $theme.colors.contentPrimary,
         }),
       },
     };
@@ -184,6 +184,7 @@ class BaseInput<T: EventTarget> extends React.Component<
         onClick={() => this.setState({isMasked: !this.state.isMasked})}
         title={label}
         type="button"
+        size={this.props.size}
         {...maskToggleButtonProps}
       >
         {this.state.isMasked ? (
@@ -288,6 +289,8 @@ class BaseInput<T: EventTarget> extends React.Component<
           type={this.getInputType()}
           required={this.props.required}
           value={this.props.value}
+          min={this.props.min}
+          max={this.props.max}
           rows={
             this.props.type === CUSTOM_INPUT_TYPE.textarea
               ? this.props.rows

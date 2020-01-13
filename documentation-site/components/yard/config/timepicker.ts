@@ -1,5 +1,6 @@
 import {TimePicker} from 'baseui/timepicker';
-import {PropTypes} from '../const';
+import {SIZE} from 'baseui/input';
+import {PropTypes} from 'react-view';
 import {TConfig} from '../types';
 import inputConfig from './input';
 import selectConfig from './select';
@@ -12,6 +13,7 @@ const TimepickerConfig: TConfig = {
   },
   scope: {
     TimePicker,
+    SIZE,
   },
   theme: selectConfig.theme,
   props: {
@@ -31,10 +33,21 @@ const TimepickerConfig: TConfig = {
         into: 'value',
       },
     },
+    size: inputConfig.props.size,
     creatable: {
       value: undefined,
       type: PropTypes.Boolean,
       description: `Set to true to allow times that aren't displayed in the options list to be entered manually. Defaults to false.`,
+    },
+    nullable: {
+      value: undefined,
+      type: PropTypes.Boolean,
+      description: `Set to true to allow the timepicker to have an undefined value. Defaults to false.`,
+    },
+    placeholder: {
+      value: undefined,
+      type: PropTypes.String,
+      description: `If the value is undefined, the placeholder is shown. Defaults to HH:mm.`,
     },
     disabled: inputConfig.props.disabled,
     format: {
@@ -55,10 +68,12 @@ const TimepickerConfig: TConfig = {
     positive: inputConfig.props.positive,
     overrides: {
       value: undefined,
-      type: PropTypes.Overrides,
+      type: PropTypes.Custom,
       description: 'Lets you customize all aspects of the component.',
-      names: [],
-      sharedProps: {},
+      custom: {
+        names: [],
+        sharedProps: {},
+      },
     },
   },
   mapTokensToProps: {

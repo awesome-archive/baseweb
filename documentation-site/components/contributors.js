@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -36,6 +36,7 @@ function Contributors(props: {contributors: Contributor[]}) {
             target="_blank"
             marginRight="scale200"
             key={contributor.login}
+            title={contributor.login}
           >
             <Avatar
               name={contributor.login}

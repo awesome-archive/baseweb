@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -132,10 +132,10 @@ function statusToTagKind(status: StatusT) {
 }
 
 function Tasks(props: {tasks: TaskT[]}) {
-  const [useCss] = useStyletron();
+  const [css] = useStyletron();
   return (
     <div
-      className={useCss({
+      className={css({
         gridColumn: 'span 5',
         padding: '32px 24px',
       })}
@@ -242,12 +242,12 @@ function Row({striped, row}: {striped: boolean, row: RowT}) {
 }
 
 export function component() {
-  const [useCss] = useStyletron();
+  const [css] = useStyletron();
   return (
-    <div className={useCss({height: '600px'})}>
+    <div className={css({height: '600px'})}>
       <HeadingLevel>
         <div
-          className={useCss({
+          className={css({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',

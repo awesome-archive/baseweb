@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@ import * as React from 'react';
 import {MDXProvider} from '@mdx-js/tag';
 import {Block} from 'baseui/block';
 import {Button, KIND, SIZE} from 'baseui/button';
-import {StatefulTooltip} from 'baseui/tooltip';
 
 import TableOfContents from './table-of-contents';
 import {themedStyled} from '../pages/_app';
@@ -23,7 +22,6 @@ import Routes from '../routes';
 import DirectionContext from '../components/direction-context';
 import ComponentSizes from '../../component-sizes.json';
 import Help from './help';
-import Survey from './survey';
 import Walkthrough from './walkthrough';
 
 const GH_URL =
@@ -71,7 +69,7 @@ const SidebarWrapper = themedStyled<{
   paddingTop: $theme.sizing.scale700,
   marginLeft: $theme.sizing.scale800,
   marginRight: $theme.sizing.scale800,
-  [$theme.media.medium]: {
+  [$theme.mediaQuery.medium]: {
     display: $hideSideNavigation ? 'none' : 'block',
     maxWidth: '16em',
   },
@@ -88,7 +86,7 @@ const ContentWrapper = themedStyled<{
   paddingRight: $theme.sizing.scale800,
   width: '100%',
   maxWidth: $maxWidth ? $maxWidth : '40em',
-  [$theme.media.medium]: {
+  [$theme.mediaQuery.medium]: {
     display: 'block',
     maxWidth: $maxWidth ? $maxWidth : '40em',
   },
@@ -117,8 +115,7 @@ class Layout extends React.Component<PropsT, {sidebarOpen: boolean}> {
     if (path.includes('/components')) {
       component = path.replace('/components/', '');
     }
-
-    const componentStats = ComponentSizes[component] || {dependencySizes: []};
+    const componentStats = ComponentSizes[component] || {};
     const componentSizeKb = Math.floor(componentStats.gzip / 1000);
 
     const route = findByPath(Routes, path);
@@ -145,8 +142,8 @@ class Layout extends React.Component<PropsT, {sidebarOpen: boolean}> {
               toggleDirection={toggleDirection}
             />
             <Block
-              backgroundColor="background"
-              color="foreground"
+              backgroundColor="backgroundPrimary"
+              color="contentPrimary"
               marginTop="scale300"
               display="flex"
               paddingTop="scale400"
@@ -195,35 +192,10 @@ class Layout extends React.Component<PropsT, {sidebarOpen: boolean}> {
                     </Button>
                   </Block>
                 )}
-                {componentStats.size ? (
-                  <StatefulTooltip
-                    accessibilityType={'tooltip'}
-                    content={
-                      <div>
-                        <p>
-                          Some of the component{"'"}s dependencies are one-time
-                          costs for your application, like React or Styletron.
-                        </p>
-                        <p>
-                          Below you can find the full breakdown of dependencies
-                          and their approximate size associated with this
-                          component:
-                        </p>
-                        <ul>
-                          {componentStats.dependencySizes.map(dep => (
-                            <li key={dep.name}>
-                              {dep.name} -{' '}
-                              {Math.floor(dep.approximateSize / 1000)}kb
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    }
-                  >
-                    <Block font="font100">
-                      [?] Component size, gzipped: {componentSizeKb}kb
-                    </Block>
-                  </StatefulTooltip>
+                {componentSizeKb ? (
+                  <Block font="font100">
+                    Component size, gzipped: {componentSizeKb}kb
+                  </Block>
                 ) : null}
                 <MDXProvider components={MarkdownElements}>
                   {children}
@@ -236,7 +208,6 @@ class Layout extends React.Component<PropsT, {sidebarOpen: boolean}> {
             <Footer />
             <Walkthrough />
             <Help />
-            <Survey />
           </React.Fragment>
         )}
       </DirectionContext.Consumer>

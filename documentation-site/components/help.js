@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -10,19 +10,20 @@ import {useStyletron} from 'baseui';
 import {Label3, Paragraph3} from 'baseui/typography';
 
 const Help = () => {
-  const [useCss, theme] = useStyletron();
+  const [css, theme] = useStyletron();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div
-      className={useCss({
+      className={css({
         position: 'fixed',
         bottom: '0px',
         right: theme.sizing.scale2400,
         boxShadow: theme.lighting.shadow400,
         padding: theme.sizing.scale400,
-        backgroundColor: theme.colors.background,
-        [`@media screen and (max-width: ${theme.breakpoints.medium}px`]: {
-          display: 'none',
+        backgroundColor: theme.colors.backgroundPrimary,
+        display: 'none',
+        [theme.mediaQuery.medium]: {
+          display: 'block',
         },
       })}
     >

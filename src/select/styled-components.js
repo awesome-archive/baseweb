@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -145,7 +145,7 @@ function getControlContainerColors(
 
   if ($isFocused || $isPseudoFocused) {
     return {
-      color: colors.foreground,
+      color: colors.contentPrimary,
       borderColor: colors.borderFocus,
       backgroundColor: colors.inputFillActive,
     };
@@ -153,7 +153,7 @@ function getControlContainerColors(
 
   if ($error) {
     return {
-      color: colors.foreground,
+      color: colors.contentPrimary,
       borderColor: colors.inputBorderError,
       backgroundColor: colors.inputFillError,
     };
@@ -161,14 +161,14 @@ function getControlContainerColors(
 
   if ($positive) {
     return {
-      color: colors.foreground,
+      color: colors.contentPrimary,
       borderColor: colors.inputBorderPositive,
       backgroundColor: colors.inputFillPositive,
     };
   }
 
   return {
-    color: colors.foreground,
+    color: colors.contentPrimary,
     borderColor: colors.inputFill,
     backgroundColor: colors.inputFill,
   };
@@ -231,7 +231,7 @@ export const StyledValueContainer = styled<SharedStylePropsArgT>(
       flexBasis: '0%',
       display: 'flex',
       alignItems: 'center',
-      flexWrap: props.$multi ? 'wrap' : 'no-wrap',
+      flexWrap: props.$multi ? 'wrap' : 'nowrap',
       overflow: 'hidden',
       ...padding,
     };
@@ -244,7 +244,7 @@ export const StyledPlaceholder = styled<SharedStylePropsArgT>('div', props => {
     $theme: {colors},
   } = props;
   return {
-    color: $disabled ? colors.inputTextDisabled : colors.foregroundAlt,
+    color: $disabled ? colors.inputTextDisabled : colors.contentSecondary,
     maxWidth: '100%',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -299,7 +299,7 @@ export const StyledInputContainer = styled<SharedStylePropsArgT>(
       paddingLeft: 0,
       paddingRight: 0,
       height: String(!$searchable ? font.lineHeight : 'auto'),
-      maxHeight: font.lineHeight,
+      maxHeight: String(font.lineHeight),
     };
   },
 );
@@ -378,7 +378,7 @@ export const StyledSelectArrow = styled<SharedStylePropsArgT>('svg', props => {
   const {colors} = $theme;
   return {
     ...getSvgStyles({$theme}),
-    color: $disabled ? colors.inputTextDisabled : colors.foreground,
+    color: $disabled ? colors.inputTextDisabled : colors.contentPrimary,
     cursor: $disabled ? 'not-allowed' : 'pointer',
   };
 });
@@ -388,7 +388,7 @@ export const StyledClearIcon = styled<SharedStylePropsArgT>('svg', props => {
   const {colors} = $theme;
   return {
     ...getSvgStyles({$theme}),
-    color: colors.foreground,
+    color: colors.contentPrimary,
     cursor: 'pointer',
   };
 });
@@ -398,21 +398,25 @@ export const getLoadingIconStyles = (props: {$theme: ThemeT}) => {
   const {colors} = $theme;
   return {
     ...getSvgStyles({$theme}),
-    color: colors.foreground,
+    color: colors.contentPrimary,
   };
 };
 
-export const StyledSearchIcon = styled<SharedStylePropsArgT>('div', props => {
-  const {$disabled, $theme} = props;
-  const {colors, sizing} = $theme;
-  return {
-    ...getSvgStyles(props),
-    color: $disabled ? colors.inputTextDisabled : colors.foreground,
-    cursor: $disabled ? 'not-allowed' : 'pointer',
-    position: 'absolute',
-    [$theme.direction === 'rtl' ? 'right' : 'left']: sizing.scale500,
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%',
-  };
-});
+export const StyledSearchIconContainer = styled<SharedStylePropsArgT>(
+  'div',
+  props => {
+    const {$disabled, $theme} = props;
+    const {colors, sizing} = $theme;
+    return {
+      ...getSvgStyles(props),
+      color: $disabled ? colors.inputTextDisabled : colors.contentPrimary,
+      cursor: $disabled ? 'not-allowed' : 'pointer',
+      position: 'absolute',
+      top: 0,
+      [$theme.direction === 'rtl' ? 'right' : 'left']: sizing.scale500,
+      display: 'flex',
+      alignItems: 'center',
+      height: '100%',
+    };
+  },
+);

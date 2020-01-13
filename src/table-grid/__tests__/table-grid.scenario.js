@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -27,9 +27,9 @@ const data = Array(100)
   ]);
 
 export function component() {
-  const [useCss] = useStyletron();
+  const [css] = useStyletron();
   return (
-    <div className={useCss({height: '750px', width: '900px'})}>
+    <div className={css({height: '750px', width: '900px'})}>
       <StyledTable $gridTemplateColumns="minmax(400px, max-content) 200px 200px 200px 200px 200px">
         <StyledHeadCell>Column 1</StyledHeadCell>
         <StyledHeadCell>Column 2</StyledHeadCell>

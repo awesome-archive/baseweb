@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@ const {mount, analyzeAccessibility} = require('../../../e2e/helpers');
 
 const selectors = {
   input: 'input',
-  calendar: '[role="application"]',
+  calendar: '[data-baseweb="calendar"]',
   day: '[aria-label="Choose Sunday, March 10th 2019. It\'s available."]',
   day2: '[aria-label="Choose Thursday, March 28th 2019. It\'s available."]',
   day3: '[aria-label="Choose Thursday, February 14th 2019. It\'s available."]',
@@ -101,7 +101,7 @@ describe('Datepicker', () => {
       selectors.input,
       input => input.value,
     );
-    expect(selectedValue).toBe('2019/03/18');
+    expect(selectedValue).toBe('2019/07/01');
   });
 
   it('month year dropdown opens on arrow down', async () => {

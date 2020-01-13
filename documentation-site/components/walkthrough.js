@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ const COOKIE_NAME = `baseweb-news-${CAMPAIGN_NAME}`;
 
 export default () => {
   const cookie = Cookies.get(COOKIE_NAME);
-  const [useCss, theme] = useStyletron();
+  const [css, theme] = useStyletron();
   const [currentPage, setPage] = React.useState(0);
   let isComponentPage = false;
   // $FlowFixMe
@@ -83,14 +83,24 @@ export default () => {
           >
             Previous
           </ModalButton>
-          <ModalButton
-            disabled={!Content[currentPage + 1]}
-            onClick={() => {
-              setPage(currentPage + 1);
-            }}
-          >
-            Next
-          </ModalButton>
+          {Content[currentPage + 1] ? (
+            <ModalButton
+              onClick={() => {
+                setPage(currentPage + 1);
+              }}
+            >
+              Next
+            </ModalButton>
+          ) : (
+            <ModalButton
+              onClick={() => {
+                setPage(0);
+                setIsOpen(false);
+              }}
+            >
+              Done
+            </ModalButton>
+          )}
         </ModalFooter>
       </Modal>
       <div
@@ -104,16 +114,17 @@ export default () => {
         }}
         tabIndex={0}
         role="button"
-        className={useCss({
+        className={css({
           position: 'fixed',
           bottom: '0px',
           right: theme.sizing.scale4800,
           boxShadow: theme.lighting.shadow400,
           textAlign: 'center',
           padding: theme.sizing.scale400,
-          backgroundColor: theme.colors.background,
-          [`@media screen and (max-width: ${theme.breakpoints.medium}px`]: {
-            display: 'none',
+          backgroundColor: theme.colors.backgroundPrimary,
+          display: 'none',
+          [theme.mediaQuery.medium]: {
+            display: 'block',
           },
         })}
       >

@@ -1,6 +1,6 @@
 import {Card, StyledBody, StyledAction} from 'baseui/card';
 import {Button} from 'baseui/button';
-import {PropTypes} from '../const';
+import {PropTypes} from 'react-view';
 import {TConfig} from '../types';
 
 const cardProps = require('!!extract-react-types-loader!../../../../src/card/card.js');
@@ -47,23 +47,26 @@ const CardConfig: TConfig = {
       value: undefined,
       placeholder: 'https://source.unsplash.com/user/erondu/700x400',
       type: PropTypes.String,
-      description: 'Image to be displayed in the card.',
+      description:
+        'Image to be displayed in the card. Can also be an object with img attributes.',
     },
     overrides: {
       value: undefined,
-      type: PropTypes.Overrides,
+      type: PropTypes.Custom,
       description: 'Lets you customize all aspects of the component.',
-      names: [
-        'Action',
-        'Body',
-        'Contents',
-        'HeaderImage',
-        'Root',
-        'Thumbnail',
-        'Title',
-        'Wrapper',
-      ],
-      sharedProps: {},
+      custom: {
+        names: [
+          'Action',
+          'Body',
+          'Contents',
+          'HeaderImage',
+          'Root',
+          'Thumbnail',
+          'Title',
+          'Wrapper',
+        ],
+        sharedProps: {},
+      },
     },
   },
   mapTokensToProps: {

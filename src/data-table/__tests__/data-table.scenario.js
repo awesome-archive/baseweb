@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -10,15 +10,29 @@ import * as React from 'react';
 
 import {useStyletron} from '../../styles/index.js';
 
+import AnchorColumn from '../column-anchor.js';
 import BooleanColumn from '../column-boolean.js';
 import CategoricalColumn from '../column-categorical.js';
 import CustomColumn from '../column-custom.js';
 import NumericalColumn from '../column-numerical.js';
 import StringColumn from '../column-string.js';
 import {COLUMNS, NUMERICAL_FORMATS} from '../constants.js';
-import {Unstable_DataTable} from '../data-table.js';
+import {Unstable_StatefulDataTable} from '../stateful-data-table.js';
 
 export const name = 'data-table';
+
+type RowDataT = [
+  string,
+  number,
+  number,
+  number,
+  number,
+  {color: string},
+  string,
+  boolean,
+  string,
+  {content: string, href: string},
+];
 
 // https://gist.github.com/6174/6062387
 function pseudoRandomString(rowIdx, columnIdx) {
@@ -37,6 +51,8 @@ function makeRowsFromColumns(columns, rowCount) {
       id: i,
       data: columns.map((column, j) => {
         switch (column.kind) {
+          case COLUMNS.ANCHOR:
+            return {content: 'hello', href: 'https://google.com'};
           case COLUMNS.CATEGORICAL:
             switch (i % 5) {
               case 4:
@@ -82,36 +98,54 @@ function makeRowsFromColumns(columns, rowCount) {
 }
 
 const columns = [
-  CategoricalColumn({title: 'categorical'}),
-  NumericalColumn({title: 'numerical', minWidth: 90}),
-  NumericalColumn({title: 'neg std', highlight: n => n < 0, minWidth: 90}),
+  CategoricalColumn({
+    title: 'categorical',
+    mapDataToValue: (data: RowDataT) => data[0],
+  }),
+  NumericalColumn({
+    title: 'numerical',
+    minWidth: 90,
+    mapDataToValue: (data: RowDataT) => data[1],
+  }),
+  NumericalColumn({
+    title: 'neg std',
+    highlight: n => n < 0,
+    minWidth: 90,
+    mapDataToValue: (data: RowDataT) => data[2],
+  }),
   NumericalColumn({
     title: 'accounting',
     format: NUMERICAL_FORMATS.ACCOUNTING,
     minWidth: 120,
+    mapDataToValue: (data: RowDataT) => data[3],
   }),
   NumericalColumn({
     title: 'percent',
     format: NUMERICAL_FORMATS.PERCENTAGE,
     minWidth: 120,
+    mapDataToValue: (data: RowDataT) => data[4],
   }),
-  CustomColumn<{color: string}, {selection: Set<string>}>({
+  CustomColumn<
+    {color: string},
+    {selection: Set<string>, exclude: boolean, description: string},
+  >({
     title: 'custom color',
     filterable: true,
     sortable: true,
     minWidth: 120,
+    mapDataToValue: (data: RowDataT) => data[5],
     renderCell: function Cell(props) {
-      const [useCss] = useStyletron();
+      const [css] = useStyletron();
       return (
         <div
-          className={useCss({
+          className={css({
             alignItems: 'center',
             fontFamily: '"Comic Sans MS", cursive, sans-serif',
             display: 'flex',
           })}
         >
           <div
-            className={useCss({
+            className={css({
               backgroundColor: props.value.color,
               height: '12px',
               marginRight: '24px',
@@ -153,7 +187,11 @@ const columns = [
           </ul>
           <button
             onClick={() => {
-              props.setFilter({selection}, Array.from(selection).join(', '));
+              props.setFilter({
+                selection,
+                description: Array.from(selection).join(', '),
+                exclude: false,
+              });
               props.close();
             }}
           >
@@ -171,9 +209,23 @@ const columns = [
       return a.color.localeCompare(b.color);
     },
   }),
-  StringColumn({title: 'string', minWidth: 148}),
-  BooleanColumn({title: 'boolean'}),
-  CategoricalColumn({title: 'second category'}),
+  StringColumn({
+    title: 'string',
+    minWidth: 148,
+    mapDataToValue: (data: RowDataT) => data[6],
+  }),
+  BooleanColumn({
+    title: 'boolean',
+    mapDataToValue: (data: RowDataT) => data[7],
+  }),
+  CategoricalColumn({
+    title: 'second category',
+    mapDataToValue: (data: RowDataT) => data[8],
+  }),
+  AnchorColumn({
+    title: 'anchor',
+    mapDataToValue: (data: RowDataT) => data[9],
+  }),
 ];
 
 const rows = makeRowsFromColumns(columns, 2000);
@@ -181,7 +233,7 @@ const rows = makeRowsFromColumns(columns, 2000);
 export const component = () => {
   return (
     <div style={{height: '800px', width: '900px'}}>
-      <Unstable_DataTable columns={columns} rows={rows} />
+      <Unstable_StatefulDataTable columns={columns} rows={rows} />
     </div>
   );
 };

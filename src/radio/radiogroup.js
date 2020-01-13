@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -39,6 +39,7 @@ class StatelessRadioGroup extends React.Component<PropsT, StatelessStateT> {
 
     if (__DEV__) {
       const overrideKeys = Object.keys(overrides);
+      // TODO(v10)
       if (overrideKeys.length && !overrideKeys.includes('RadioGroupRoot')) {
         // eslint-disable-next-line no-console
         console.warn(`All overrides beside 'RadioGroupRoot' will be deprecated in the next major version update.

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -40,6 +40,7 @@ function getPuppeteerUrl(name, theme) {
 async function mount(page, scenarioName, theme) {
   // replicate console events into terminal
   page.on('console', msg => {
+    if (msg.type() === 'warning') return;
     for (let i = 0; i < msg.args().length; ++i) {
       // eslint-disable-next-line no-console
       console.log(`${msg.args()[i]}`);

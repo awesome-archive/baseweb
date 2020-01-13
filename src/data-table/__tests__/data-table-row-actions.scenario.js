@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -12,25 +12,40 @@ import CategoricalColumn from '../column-categorical.js';
 import NumericalColumn from '../column-numerical.js';
 import StringColumn from '../column-string.js';
 import {NUMERICAL_FORMATS} from '../constants.js';
-import {Unstable_DataTable} from '../data-table.js';
+import {Unstable_StatefulDataTable} from '../stateful-data-table.js';
 
 import {ArrowUp} from '../../icon/index.js';
 
 export const name = 'data-table-row-actions';
 
+type RowDataT = [string, string, number, number, number, number];
+
 const columns = [
-  StringColumn({title: 'Movie'}),
-  CategoricalColumn({title: 'Genre'}),
+  StringColumn({title: 'Movie', mapDataToValue: (data: RowDataT) => data[0]}),
+  CategoricalColumn({
+    title: 'Genre',
+    mapDataToValue: (data: RowDataT) => data[1],
+  }),
   NumericalColumn({
     title: 'Production Budget (millions)',
     format: NUMERICAL_FORMATS.ACCOUNTING,
+    mapDataToValue: (data: RowDataT) => data[2],
   }),
   NumericalColumn({
     title: 'Box Office (millions)',
     format: NUMERICAL_FORMATS.ACCOUNTING,
+    mapDataToValue: (data: RowDataT) => data[3],
   }),
-  NumericalColumn({title: 'ROI', precision: 2}),
-  NumericalColumn({title: 'Rating IMDB', precision: 2}),
+  NumericalColumn({
+    title: 'ROI',
+    precision: 2,
+    mapDataToValue: (data: RowDataT) => data[4],
+  }),
+  NumericalColumn({
+    title: 'Rating IMDB',
+    precision: 2,
+    mapDataToValue: (data: RowDataT) => data[5],
+  }),
 ];
 
 const rows = [
@@ -91,7 +106,7 @@ export const component = () => {
   return (
     <div>
       <div style={{height: '500px', width: '400px'}}>
-        <Unstable_DataTable
+        <Unstable_StatefulDataTable
           columns={columns}
           rows={rows}
           rowActions={rowActions}

@@ -6,7 +6,7 @@ import Alert from 'baseui/icon/alert.js';
 import Check from 'baseui/icon/check.js';
 
 import {
-  Unstable_DataTable,
+  Unstable_StatefulDataTable,
   BooleanColumn,
   CategoricalColumn,
   NumericalColumn,
@@ -14,20 +14,49 @@ import {
   NUMERICAL_FORMATS,
 } from 'baseui/data-table';
 
+type RowDataT = [
+  string,
+  boolean,
+  string,
+  number,
+  number,
+  number,
+  number,
+];
+
 const columns = [
-  StringColumn({title: 'Movie'}),
-  BooleanColumn({title: 'is it good?'}),
-  CategoricalColumn({title: 'Genre'}),
+  StringColumn({
+    title: 'Movie',
+    mapDataToValue: (data: RowDataT) => data[0],
+  }),
+  BooleanColumn({
+    title: 'is it good?',
+    mapDataToValue: (data: RowDataT) => data[1],
+  }),
+  CategoricalColumn({
+    title: 'Genre',
+    mapDataToValue: (data: RowDataT) => data[2],
+  }),
   NumericalColumn({
     title: 'Production Budget (millions)',
     format: NUMERICAL_FORMATS.ACCOUNTING,
+    mapDataToValue: (data: RowDataT) => data[3],
   }),
   NumericalColumn({
     title: 'Box Office (millions)',
     format: NUMERICAL_FORMATS.ACCOUNTING,
+    mapDataToValue: (data: RowDataT) => data[4],
   }),
-  NumericalColumn({title: 'ROI', precision: 2}),
-  NumericalColumn({title: 'Rating IMDB', precision: 2}),
+  NumericalColumn({
+    title: 'ROI',
+    precision: 2,
+    mapDataToValue: (data: RowDataT) => data[5],
+  }),
+  NumericalColumn({
+    title: 'Rating IMDB',
+    precision: 2,
+    mapDataToValue: (data: RowDataT) => data[6],
+  }),
 ];
 
 const initialRows = [
@@ -171,7 +200,7 @@ export default () => {
 
   return (
     <div style={{height: '300px'}}>
-      <Unstable_DataTable
+      <Unstable_StatefulDataTable
         batchActions={batchActions}
         rowActions={rowActions}
         columns={columns}

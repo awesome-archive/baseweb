@@ -1,5 +1,5 @@
 import {Navigation} from 'baseui/side-navigation';
-import {PropTypes} from '../const';
+import {PropTypes} from 'react-view';
 import {TConfig} from '../types';
 
 const sideNavProps = require('!!extract-react-types-loader!../../../../src/side-navigation/nav.js');
@@ -56,29 +56,42 @@ const SideNavigationConfig: TConfig = {
         into: 'activeItemId',
       },
     },
+    activePredicate: {
+      value: undefined,
+      type: PropTypes.Function,
+      description:
+        'Is called on the nav item render to test if the item is currently selected. If returns true, the item will be rendered as an active.',
+    },
+    mapItem: {
+      value: undefined,
+      type: PropTypes.Function,
+      description: 'Optional transform function that is called for each Item.',
+    },
     overrides: {
       value: undefined,
-      type: PropTypes.Overrides,
+      type: PropTypes.Custom,
       description: 'Lets you customize all aspects of the component.',
-      names: [
-        'Root',
-        'NavItemContainer',
-        'NavLink',
-        'NavItem',
-        'SubNavContainer',
-      ],
-      sharedProps: {
-        $active: {
-          type: PropTypes.Boolean,
-          description: 'True if nav item is active.',
-        },
-        $level: {
-          type: PropTypes.Number,
-          description: 'Indicates the nav item nesting level.',
-        },
-        $selectable: {
-          type: PropTypes.Boolean,
-          description: 'True if the nav item is selectable.',
+      custom: {
+        names: [
+          'Root',
+          'NavItemContainer',
+          'NavLink',
+          'NavItem',
+          'SubNavContainer',
+        ],
+        sharedProps: {
+          $active: {
+            type: PropTypes.Boolean,
+            description: 'True if nav item is active.',
+          },
+          $level: {
+            type: PropTypes.Number,
+            description: 'Indicates the nav item nesting level.',
+          },
+          $selectable: {
+            type: PropTypes.Boolean,
+            description: 'True if the nav item is selectable.',
+          },
         },
       },
     },

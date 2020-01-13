@@ -1,7 +1,7 @@
 import pick from 'just-pick';
 
 import {Input, ADJOINED, SIZE} from 'baseui/input';
-import {PropTypes} from '../const';
+import {PropTypes} from 'react-view';
 import {TConfig} from '../types';
 
 import {changeHandlers} from './common';
@@ -172,6 +172,18 @@ export const inputProps = {
     description: 'Name attribute.',
     hidden: true,
   },
+  min: {
+    value: undefined,
+    type: PropTypes.String,
+    description: 'min value when used as input type=number',
+    hidden: true,
+  },
+  max: {
+    value: undefined,
+    type: PropTypes.String,
+    description: 'max value when used as input type=number',
+    hidden: true,
+  },
   ...pick(changeHandlers, [
     'onBlur',
     'onKeyDown',
@@ -203,37 +215,39 @@ const InputConfig: TConfig = {
     ...inputProps,
     overrides: {
       value: undefined,
-      type: PropTypes.Overrides,
+      type: PropTypes.Custom,
       description: 'Lets you customize all aspects of the component.',
-      names: [
-        'Root',
-        'Input',
-        'InputContainer',
-        'After',
-        'Before',
-        'ClearIcon',
-        'ClearIconContainer',
-        'EndEnhancer',
-        'MaskToggleButton',
-        'MaskToggleHideIcon',
-        'MaskToggleShowIcon',
-        'StartEnhancer',
-      ],
-      sharedProps: {
-        $isFocused: {
-          type: PropTypes.Boolean,
-          description: 'True when the component is focused.',
-        },
-        $disabled: 'disabled',
-        $error: 'error',
-        $positive: 'positive',
-        $adjoined: 'adjoined',
-        $size: 'size',
-        $required: 'required',
-        $position: {
-          type: PropTypes.Enum,
-          description:
-            'ADJOINED state. How is the input grouped with other controls.',
+      custom: {
+        names: [
+          'Root',
+          'Input',
+          'InputContainer',
+          'After',
+          'Before',
+          'ClearIcon',
+          'ClearIconContainer',
+          'EndEnhancer',
+          'MaskToggleButton',
+          'MaskToggleHideIcon',
+          'MaskToggleShowIcon',
+          'StartEnhancer',
+        ],
+        sharedProps: {
+          $isFocused: {
+            type: PropTypes.Boolean,
+            description: 'True when the component is focused.',
+          },
+          $disabled: 'disabled',
+          $error: 'error',
+          $positive: 'positive',
+          $adjoined: 'adjoined',
+          $size: 'size',
+          $required: 'required',
+          $position: {
+            type: PropTypes.Enum,
+            description:
+              'ADJOINED state. How is the input grouped with other controls.',
+          },
         },
       },
     },

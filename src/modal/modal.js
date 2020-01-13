@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -33,12 +33,15 @@ import type {
 class Modal extends React.Component<ModalPropsT, ModalStateT> {
   static defaultProps: $Shape<ModalPropsT> = {
     animate: true,
-    autofocus: true,
+    // TODO(v10): remove
+    autofocus: null,
+    autoFocus: true,
     closeable: true,
     isOpen: false,
     overrides: {},
     role: ROLE.dialog,
     size: SIZE.default,
+    unstable_ModalBackdropScroll: false,
   };
 
   animateOutTimer: ?TimeoutID;
@@ -54,6 +57,22 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
 
   componentDidMount() {
     this.setState({mounted: true});
+    // TODO(v10)
+    if (__DEV__) {
+      if (!this.props.unstable_ModalBackdropScroll) {
+        console.warn(`Consider setting 'unstable_ModalBackdropScroll' prop to true
+        to prepare for the next major version upgrade. 'unstable_ModalBackdropScroll'
+        prop will be removed in the next major version but implemented as the default behavior.`);
+      }
+      if (this.props.overrides && this.props.overrides.Backdrop) {
+        console.warn(`Backdrop element will be removed in the next major version in favor of
+        DialogContainer element that will have the backdrop styles and backdrop click handle.
+        Consider setting 'unstable_ModalBackdropScroll' prop to true that will apply backdrop
+        styles to DialogContainer enable modal scrolling while cursor in over the backdrop.
+        Then pass backdrop overrides to DialogContainer instead. Tha will help you with
+        the next major version upgrade.`);
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -99,7 +118,11 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
     const mountNode = this.getMountNode();
     const lastStyle = this.lastMountNodeOverflowStyle;
     if (mountNode && lastStyle !== null) {
-      mountNode.style.overflow = lastStyle || '';
+      // If overflow is not 'hidden', something else has changed the
+      // overflow style and we shouldn't try to reset it.
+      if (mountNode.style.overflow === 'hidden') {
+        mountNode.style.overflow = lastStyle || '';
+      }
       this.lastMountNodeOverflowStyle = null;
     }
   }
@@ -128,12 +151,14 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
     this.triggerClose(CLOSE_SOURCE.backdrop);
   };
 
-  onDialogContainerClick = (e: SyntheticEvent<HTMLElement>) => {
-    const dialogRef = this.getRef('Dialog');
-    if (dialogRef.current && dialogRef.current.contains(e.target)) {
-      return;
+  // Handles modal closure when unstable_ModalBackdropScroll is set to true
+  onDialogContainerBackdropClick = (e: Event) => {
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.contains(this.getRef('DialogContainer').current)
+    ) {
+      this.onBackdropClick();
     }
-    this.onBackdropClick();
   };
 
   onCloseClick = () => {
@@ -192,7 +217,14 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
   };
 
   getSharedProps(): $Diff<SharedStylePropsArgT, {children?: React.Node}> {
-    const {animate, isOpen, size, role, closeable} = this.props;
+    const {
+      animate,
+      isOpen,
+      size,
+      role,
+      closeable,
+      unstable_ModalBackdropScroll,
+    } = this.props;
     return {
       $animate: animate,
       $isVisible: this.state.isVisible,
@@ -200,6 +232,7 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
       $size: size,
       $role: role,
       $closeable: !!closeable,
+      $unstable_ModalBackdropScroll: unstable_ModalBackdropScroll,
     };
   }
 
@@ -226,7 +259,12 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
   }
 
   renderModal() {
-    const {overrides = {}, closeable, role} = this.props;
+    const {
+      overrides = {},
+      closeable,
+      role,
+      unstable_ModalBackdropScroll,
+    } = this.props;
 
     const {
       Root: RootOverride,
@@ -251,11 +289,38 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
     const sharedProps = this.getSharedProps();
     const children = this.getChildren();
 
+    if (this.props.autofocus === false && __DEV__) {
+      console.warn(
+        `The prop "autofocus" is deprecated in favor of "autoFocus" to be consistent across the project.
+        The property "autofocus" will be removed in a future major version.`,
+      );
+    }
+
+    // Handles backdrop click when `unstable_ModalBackdropScroll` is set to true
+    // $FlowFixMe
+    if (dialogContainerProps.ref) {
+      // $FlowFixMe
+      this._refs.DialogContainer = dialogContainerProps.ref;
+    }
+    const dialogContainerConditionalProps = unstable_ModalBackdropScroll
+      ? {
+          ref: this.getRef('DialogContainer'),
+          onClick: this.onDialogContainerBackdropClick,
+        }
+      : {};
+
     return (
       <LocaleContext.Consumer>
         {locale => (
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          <FocusLock returnFocus autoFocus={this.props.autofocus}>
+          <FocusLock
+            returnFocus
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus={
+              this.props.autofocus !== null
+                ? this.props.autofocus
+                : this.props.autoFocus
+            }
+          >
             <Root
               data-baseweb="modal"
               ref={this.getRef('Root')}
@@ -263,12 +328,14 @@ class Modal extends React.Component<ModalPropsT, ModalStateT> {
               {...rootProps}
             >
               <Backdrop
-                onClick={this.onBackdropClick}
+                {...(unstable_ModalBackdropScroll
+                  ? {}
+                  : {onClick: this.onBackdropClick})}
                 {...sharedProps}
                 {...backdropProps}
               />
               <DialogContainer
-                onClick={this.onDialogContainerClick}
+                {...dialogContainerConditionalProps}
                 {...sharedProps}
                 {...dialogContainerProps}
               >

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -9,9 +9,7 @@ LICENSE file in the root directory of this source tree.
 
 const {mount, analyzeAccessibility} = require('../../../e2e/helpers');
 
-function getTable(page) {
-  return page.$('div[data-baseweb="data-table"]');
-}
+const {getTable} = require('./utilities.js');
 
 function getCheckboxes(parent) {
   return parent.$$('label[data-baseweb="checkbox"]');

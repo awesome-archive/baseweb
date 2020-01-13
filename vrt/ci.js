@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -128,7 +128,7 @@ async function updatePullRequests(snapshotPullRequest) {
     log(
       `The existing snapshot PR has been updated with the latest snapshot diffs.`,
     );
-    await addCommentToOriginalPullRequest(snapshotPullRequest.number);
+    await addCommentToOriginalPullRequest(snapshotPullRequest.html_url);
   } else {
     const newSnapshotPullRequest = await createSnapshotPullRequest();
     await addLabelsToSnapshotPullRequest(newSnapshotPullRequest.number);

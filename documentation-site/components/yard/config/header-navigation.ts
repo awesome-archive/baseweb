@@ -6,7 +6,7 @@ import {
 } from 'baseui/header-navigation';
 import {StyledLink} from 'baseui/link';
 import {Button} from 'baseui/button';
-import {PropTypes} from '../const';
+import {PropTypes} from 'react-view';
 import {TConfig} from '../types';
 
 const headerNavigationProps = require('!!extract-react-types-loader!../../../../src/header-navigation/header-navigation.js');
@@ -15,7 +15,12 @@ const buttonProps = require('!!extract-react-types-loader!../../../../src/button
 const HeaderNavigationConfig: TConfig = {
   imports: {
     'baseui/header-navigation': {
-      named: ['HeaderNavigation', 'ALIGN'],
+      named: [
+        'HeaderNavigation',
+        'ALIGN',
+        'StyledNavigationList',
+        'StyledNavigationItem',
+      ],
     },
     'baseui/link': {
       named: ['StyledLink'],
@@ -58,10 +63,12 @@ const HeaderNavigationConfig: TConfig = {
     },
     overrides: {
       value: undefined,
-      type: PropTypes.Overrides,
+      type: PropTypes.Custom,
       description: 'Lets you customize all aspects of the component.',
-      names: ['Root'],
-      sharedProps: {},
+      custom: {
+        names: ['Root'],
+        sharedProps: {},
+      },
     },
   },
   mapTokensToProps: {

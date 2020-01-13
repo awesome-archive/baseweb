@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@ const {mount} = require('../../../e2e/helpers');
 
 const selectors = {
   input: 'input',
-  calendar: '[role="application"]',
+  calendar: '[data-baseweb="calendar"]',
   day: '[aria-label="Choose Sunday, March 10th 2019. It\'s available."]',
   day2: '[aria-label="Choose Thursday, March 28th 2019. It\'s available."]',
   day4: '[aria-label="Choose Monday, April 1st 2019. It\'s available."]',
@@ -51,23 +51,7 @@ describe('Datepicker, Range', () => {
       selectors.input,
       input => input.value,
     );
-    expect(selectedValue).toBe('2019/12/25 - 2019/12/31');
-  });
-
-  it('does not highlight random days when the right arrow is clicked', async () => {
-    await mount(page, 'datepicker-range');
-    await page.waitFor(selectors.input);
-    await page.click(selectors.input);
-    await page.waitFor(selectors.calendar);
-    await page.click(selectors.rightArrow);
-    await page.waitFor(selectors.day4);
-    const value = await page.$(selectors.day4);
-    const highlighted = await page.evaluate(
-      element => element.getAttribute('data-highlighted'),
-      value,
-    );
-    // Check the value of a custom data-highlighted attribute
-    expect(highlighted).toBe('false');
+    expect(selectedValue).toBe('2019/12/25 – 2019/12/31');
   });
 
   it('selects range', async () => {
@@ -81,7 +65,7 @@ describe('Datepicker, Range', () => {
       selectors.input,
       input => input.value,
     );
-    expect(selectedValue1).toBe('2019/03/10 -     /  /  ');
+    expect(selectedValue1).toBe('2019/03/10 –     /  /  ');
 
     await page.click(selectors.day2);
     await page.waitFor(selectors.calendar, {
@@ -91,6 +75,6 @@ describe('Datepicker, Range', () => {
       selectors.input,
       input => input.value,
     );
-    expect(selectedValue2).toBe('2019/03/10 - 2019/03/28');
+    expect(selectedValue2).toBe('2019/03/10 – 2019/03/28');
   });
 });

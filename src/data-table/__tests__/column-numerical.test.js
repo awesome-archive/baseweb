@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Uber Technologies, Inc.
+Copyright (c) 2018-2020 Uber Technologies, Inc.
 
 This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
@@ -13,27 +13,35 @@ import {NumericalColumn, NUMERICAL_FORMATS} from '../index.js';
 
 describe('numerical column', () => {
   it('is sortable by default', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     expect(column.sortable).toBe(true);
   });
 
   it('is filterable by default', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     expect(column.filterable).toBe(true);
   });
 
   it('applies provided sortable value', () => {
-    const column = NumericalColumn({title: 'column', sortable: false});
+    const column = NumericalColumn({
+      title: 'column',
+      sortable: false,
+      mapDataToValue: () => 0,
+    });
     expect(column.sortable).toBe(false);
   });
 
   it('applies provided filterable value', () => {
-    const column = NumericalColumn({title: 'column', filterable: false});
+    const column = NumericalColumn({
+      title: 'column',
+      filterable: false,
+      mapDataToValue: () => 0,
+    });
     expect(column.filterable).toBe(false);
   });
 
   it('cell renders provided value with default options', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const Cell = column.renderCell;
 
     const {container} = render(<Cell value={1999.888} />);
@@ -42,55 +50,63 @@ describe('numerical column', () => {
   });
 
   it('cell renders positive value according to accounting format', () => {
+    const value = 1999.888;
     const column = NumericalColumn({
       title: 'column',
       format: NUMERICAL_FORMATS.ACCOUNTING,
+      mapDataToValue: () => value,
     });
     const Cell = column.renderCell;
 
-    const {container} = render(<Cell value={1999.888} />);
+    const {container} = render(<Cell value={value} />);
     const cell = container.querySelector('div');
     expect(cell.textContent).toBe('$1999.89');
   });
 
   it('cell renders negative value according to accounting format', () => {
+    const value = -1999.888;
     const column = NumericalColumn({
       title: 'column',
       format: NUMERICAL_FORMATS.ACCOUNTING,
+      mapDataToValue: () => value,
     });
     const Cell = column.renderCell;
 
-    const {container} = render(<Cell value={-1999.888} />);
+    const {container} = render(<Cell value={value} />);
     const cell = container.querySelector('div');
     expect(cell.textContent).toBe('($1999.89)');
   });
 
   it('cell renders value according to percentage format', () => {
+    const value = 1999.888;
     const column = NumericalColumn({
       title: 'column',
       format: NUMERICAL_FORMATS.PERCENTAGE,
+      mapDataToValue: () => value,
     });
     const Cell = column.renderCell;
 
-    const {container} = render(<Cell value={1999.888} />);
+    const {container} = render(<Cell value={value} />);
     const cell = container.querySelector('div');
     expect(cell.textContent).toBe('1999.89%');
   });
 
   it('cell renders value according to provided precision', () => {
+    const value = 1999.888;
     const column = NumericalColumn({
       title: 'column',
       precision: 3,
+      mapDataToValue: () => value,
     });
     const Cell = column.renderCell;
 
-    const {container} = render(<Cell value={1999.888} />);
+    const {container} = render(<Cell value={value} />);
     const cell = container.querySelector('div');
     expect(cell.textContent).toBe('1999.888');
   });
 
   it('can call setFilter with expected selection', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const Filter = column.renderFilter;
 
     const mockSetFilter = jest.fn();
@@ -106,15 +122,15 @@ describe('numerical column', () => {
     fireEvent.click(getByText('Apply'));
 
     expect(mockSetFilter.mock.calls.length).toBe(1);
-    const [filterParams, description] = mockSetFilter.mock.calls[0];
+    const [filterParams] = mockSetFilter.mock.calls[0];
     expect(filterParams.comparisons[0].value).toBe(2);
     expect(filterParams.exclude).toBe(false);
     expect(filterParams.comparisons[0].operation).toBe('LT');
-    expect(description).toBe('LT 2');
+    expect(filterParams.description).toBe('LT 2');
   });
 
   it('hides operators if filter single value', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const Filter = column.renderFilter;
 
     const mockSetFilter = jest.fn();
@@ -137,7 +153,7 @@ describe('numerical column', () => {
   });
 
   it('builds default filter function for integers', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const eq = column.buildFilter({
       comparisons: [
         {
@@ -145,6 +161,7 @@ describe('numerical column', () => {
           operation: 'EQ',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(eq(2)).toBe(true);
@@ -157,6 +174,7 @@ describe('numerical column', () => {
           operation: 'LT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lt(1)).toBe(true);
@@ -169,6 +187,7 @@ describe('numerical column', () => {
           operation: 'LTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lte(1)).toBe(true);
@@ -182,6 +201,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gt(3)).toBe(true);
@@ -194,6 +214,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gte(3)).toBe(true);
@@ -203,7 +224,7 @@ describe('numerical column', () => {
 
   // it rounds based on the default precision, which is 0, so to closest whole number.
   it('builds default filter function for floats', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const eq = column.buildFilter({
       comparisons: [
         {
@@ -211,6 +232,7 @@ describe('numerical column', () => {
           operation: 'EQ',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(eq(3)).toBe(true);
@@ -224,6 +246,7 @@ describe('numerical column', () => {
           operation: 'LT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lt(1)).toBe(true);
@@ -239,6 +262,7 @@ describe('numerical column', () => {
           operation: 'LTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lte(2)).toBe(true);
@@ -255,6 +279,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gt(4)).toBe(true);
@@ -268,6 +293,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gte(4)).toBe(true);
@@ -282,6 +308,7 @@ describe('numerical column', () => {
     const column = NumericalColumn({
       title: 'column',
       format: NUMERICAL_FORMATS.ACCOUNTING,
+      mapDataToValue: () => 0,
     });
     const eq = column.buildFilter({
       comparisons: [
@@ -290,6 +317,7 @@ describe('numerical column', () => {
           operation: 'EQ',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(eq(3)).toBe(false);
@@ -303,6 +331,7 @@ describe('numerical column', () => {
           operation: 'LT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lt(2)).toBe(true);
@@ -317,6 +346,7 @@ describe('numerical column', () => {
           operation: 'LTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lte(2)).toBe(true);
@@ -332,6 +362,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gt(4)).toBe(true);
@@ -347,6 +378,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gte(4)).toBe(true);
@@ -361,6 +393,7 @@ describe('numerical column', () => {
     const column = NumericalColumn({
       title: 'column',
       precision: 3,
+      mapDataToValue: () => 0,
     });
     const eq = column.buildFilter({
       comparisons: [
@@ -369,6 +402,7 @@ describe('numerical column', () => {
           operation: 'EQ',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(eq(3)).toBe(false);
@@ -383,6 +417,7 @@ describe('numerical column', () => {
           operation: 'LT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lt(2.95)).toBe(true);
@@ -397,6 +432,7 @@ describe('numerical column', () => {
           operation: 'LTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(lte(2.95)).toBe(true);
@@ -411,6 +447,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gt(3)).toBe(true);
@@ -427,6 +464,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(gte(3)).toBe(true);
@@ -439,7 +477,7 @@ describe('numerical column', () => {
   });
 
   it('builds filter function with multiple comparisons', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const eq = column.buildFilter({
       comparisons: [
         {
@@ -451,6 +489,7 @@ describe('numerical column', () => {
           operation: 'EQ',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(eq(2)).toBe(true);
@@ -468,6 +507,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(outerExclusive(1)).toBe(true);
@@ -487,6 +527,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(outerInclusive(1)).toBe(true);
@@ -506,6 +547,7 @@ describe('numerical column', () => {
           operation: 'GT',
         },
       ],
+      description: '',
       exclude: true,
     });
     expect(innerExclusive(1)).toBe(false);
@@ -525,6 +567,7 @@ describe('numerical column', () => {
           operation: 'GTE',
         },
       ],
+      description: '',
       exclude: true,
     });
     expect(innerInclusive(1)).toBe(false);
@@ -544,6 +587,7 @@ describe('numerical column', () => {
           operation: 'LT',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(overlapExclusive(1)).toBe(true);
@@ -563,6 +607,7 @@ describe('numerical column', () => {
           operation: 'LTE',
         },
       ],
+      description: '',
       exclude: false,
     });
     expect(overlapInclusive(1)).toBe(true);
@@ -573,7 +618,7 @@ describe('numerical column', () => {
   });
 
   it('builds expected sort function', () => {
-    const column = NumericalColumn({title: 'column'});
+    const column = NumericalColumn({title: 'column', mapDataToValue: () => 0});
     const input = [2, 1, 3, 4];
     input.sort(column.sortFn);
 
